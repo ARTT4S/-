@@ -118,56 +118,37 @@ int main() {
 			Sleep(1000);
 			system("cls");
 			quontitySt = addSt(student, quontitySt);
-			system("cls");
 			break;
 		case change:
 			cout << "Вы ввели команду Изменить запись.\n";
 			Sleep(1000);
 			system("cls");
 			changeSt(student, quontitySt);
-			Sleep(500);
-			system("cls");
 			break;
 		case delet:
 			cout << "Вы ввели команду Удалить запись.\n";
 			Sleep(1000);
 			write(student, quontitySt, BD);
-			BD.close();
-			BD.open(nameFile, ios_base::in);
-			binWrite(quontitySt, BD, BDBin);
-			BD.close();
-			BD.open(nameFile, ios_base::out);
 			quontitySt = deleteSt(student, quontitySt);
-			Sleep(500);
-			system("cls");
 			break;
 		case sort:
 			cout << "Вы ввели команду Сортировка.\n";
 			Sleep(1000);
 			system("cls");
 			sortSt(student, quontitySt);
-			Sleep(500);
-			system("cls");
 			break;
 		case search:
 			cout << "Вы ввели команду Поиск.\n";
 			Sleep(1000);
 			write(student, quontitySt, BD);
-			BD.close();
-			BD.open(nameFile, ios_base::in);
-			binWrite(quontitySt, BD, BDBin);
-			BD.close();
-			BD.open(nameFile, ios_base::out);
 			searchSt(student, quontitySt);
-			Sleep(500);
-			system("cls");
 			break;
 		default:
 			cout << "Введена неверная команда.\n";
-			Sleep(1000);
-			system("cls");
 		}
 		Sleep(1000);
+		system("cls");
+		Sleep(500);
 		BD.close();
 		BD.open(nameFile, ios_base::in);
 		BDBin.open(nameBinFile, ios_base::binary);
