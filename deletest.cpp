@@ -1,5 +1,5 @@
 #include "deleteSt.h"
-#include "write.h"
+#include "typeCheck.h"
 #include <iostream>
 using namespace std;
 
@@ -9,27 +9,34 @@ enum {
 };
 
 int deleteSt(studentInformation student[], int quont) {
-	int flag = 0;
+	int flag = 0, delstr = 0, copyi = 0;
 	while (flag != no) {
-		int delstr = 0;
-		cout << "Какую по счёту запись вы хотите удалить?\n";
-		cin >> delstr;
+		cout << "Вы хотите удалить запись?" << endl << "1) Да" << endl << "2) Нет\n";
+		flag = typeCheck(flag, yes, no);
 		system("cls");
-		delstr -= 1;
-		int copyi = 0;
-		for (int j = 0; j < quont; ++j) {
-			if (j != delstr) {
-				student[copyi] = student[j];
+		switch (flag) {
+		case yes:
+			cout << "Какую по счёту запись вы хотите удалить?\n";
+			delstr = typeCheck(delstr, 1, quont);
+			system("cls");
+			delstr -= 1;
+			for (int j = 0; j < quont; ++j) {
+				if (j != delstr) {
+					student[copyi] = student[j];
+				}
+				++copyi;
 			}
-			++copyi;
+			cout << "Запись удалена.\n";
+			break;
+		case no:
+			cout << "Возвращаем вас к главному меню\n";
+			system("pause");
+			break;
+		default:
+			cout << "Введена неверная команда\n";
+			break;
 		}
-		cout << "Запись удалена.\n";
-		cout << "Хотите ли вы ещё что-то удалить?" << endl << "1) Да" << endl << "2) Нет\n";
-		cin >> flag;
 		system("cls");
 	}
-	cout << "Чтобы вернуться к главному меню нажмите ENTER.\n";
-	cin.get();
-	cin.get();
 	return (quont - 1);
 }
