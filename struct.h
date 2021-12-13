@@ -9,6 +9,13 @@ extern enum {
 	maxQuontSt = 100
 };
 
+enum {
+	minGrade = 1,
+	maxGrade = 5,
+	minCourse = 1,
+	maxCourse = 6
+};
+
 extern struct studentInformation {
 	char name[nameSize]{ "Нет имени" };
 	char surname[surnameSize]{ "Нет фамилии" };
