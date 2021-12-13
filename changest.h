@@ -2,6 +2,6 @@
 #define CHANGEST_H_INCLUDED
 #include "struct.h"
 
-void changeSt(studentInformation student[]);
+void changeSt(studentInformation student[], int quont);
 
 #endif
