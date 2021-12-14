@@ -24,8 +24,10 @@ enum {
 
 static const int err = 48;
 
-void strRead(char str[], int size, char sym, fstream& BD);
+void strRead(char str[], int size, fstream& BD);
 void intRead(int *integer, int size, fstream& BD);
+void strBinRead(char str[], fstream& BDB);
+void intBinRead(int* integer, fstream& BDB);
 
 int main() {
 	setlocale(LC_ALL, "Russian");
@@ -33,9 +35,9 @@ int main() {
 	SetConsoleOutputCP(1251);
 	int command = 1, numSt = 0, quontitySt = 0;
 	const int nameFileSize = 255, sizeColumnNames = 115, size = 150;
-	char read = 'A';
+	char read = NULL;
 	const char nameFile[nameFileSize]{ "C:\\Users\\edika\\Desktop\\БД.txt" };
-	const char nameBinFile[nameFileSize]{ "C:\\Users\\edika\\Desktop\\БДбин.txt" };
+	const char nameBinFile[nameFileSize]{ "C:\\Users\\edika\\Desktop\\БДбин.bin" };
 	char* string = new char[size];
 	studentInformation* student = new studentInformation[maxQuontSt];
 	fstream BD;
@@ -55,7 +57,7 @@ int main() {
 			system("cls");
 			quontitySt = addSt(student, quontitySt);
 		}
-		else {
+		else if (BD.peek() != EOF) {
 			if (BD.is_open()) {
 				BD.getline(string, size);
 				BD.seekg(0, ios_base::end);
@@ -77,10 +79,10 @@ int main() {
 				for (int i = 0; i < quontitySt; ++i) {
 					BD.getline(string, size, '\t');
 					BD.get();
-					strRead(student[i].surname, surnameSize, '\t', BD);
-					strRead(student[i].name, nameSize, '\t', BD);
-					strRead(student[i].patronymic, patronymicSize, '\t', BD);
-					strRead(student[i].group, groupSize, '\t', BD);
+					strRead(student[i].surname, surnameSize, BD);
+					strRead(student[i].name, nameSize, BD);
+					strRead(student[i].patronymic, patronymicSize, BD);
+					strRead(student[i].group, groupSize, BD);
 					intRead(&student[i].course, size, BD);
 					intRead(&student[i].discipline.highProgr, size, BD);
 					intRead(&student[i].discipline.teorInf, size, BD);
@@ -91,6 +93,46 @@ int main() {
 					BD.get();
 					BD.getline(string, size);
 				}
+			}
+		}
+		else if (BDBin.peek() != EOF) {
+			BDBin.close();
+			BDBin.open(nameBinFile, ios_base::binary);
+			BDBin.read(string, sizeof(string));
+			BDBin.seekg(0, ios_base::end);
+			BDBin.seekg(-size, ios_base::end);
+			BDBin.seekg(-2, ios_base::cur);
+			while (read != '\n') {
+				BDBin.seekg(-2, ios_base::cur);
+				BDBin.read((char*)read, sizeof(read));
+			}
+			BDBin.read((char*)read, sizeof(read));
+			while (read != '\t') {
+				BDBin.read((char*)read, sizeof(read));
+				if (read != '\t') {
+					quontitySt *= 10;
+					quontitySt += (int)read - err;
+				}
+			}
+			BDBin.seekg(size * 2 + sizeColumnNames, ios_base::beg);
+			for (int i = 0; i < quontitySt; ++i) {
+				while (read != '\t') {
+					BDBin.read((char*)read, sizeof(read));
+				}
+				BDBin.read((char*)read, sizeof(read));
+				strBinRead(student[i].surname, BDBin);
+				strBinRead(student[i].name, BDBin);
+				strBinRead(student[i].patronymic, BDBin);
+				strBinRead(student[i].group, BDBin);
+				intBinRead(&student[i].course, BDBin);
+				intBinRead(&student[i].discipline.highProgr, BDBin);
+				intBinRead(&student[i].discipline.teorInf, BDBin);
+				intBinRead(&student[i].discipline.math, BDBin);
+				intBinRead(&student[i].discipline.anGeom, BDBin);
+				intBinRead(&student[i].discipline.english, BDBin);
+				intBinRead(&student[i].discipline.engGraph, BDBin);
+				BDBin.read((char*)read, sizeof(read));
+				BDBin.read(string, sizeof(string));
 			}
 		}
 	}
@@ -154,6 +196,7 @@ int main() {
 		BDBin.open(nameBinFile, ios_base::binary);
 		while (!BD.eof()) {
 			BD.getline(string, size);
+			cout << string << endl;
 			BDBin.write(string, sizeof(string));
 		}
 		BD.close();
@@ -166,8 +209,9 @@ int main() {
 	return(0);
 }
 
-void strRead(char str[], int size, char sym, fstream& BD) {
-	BD.getline(str, size, sym);
+void strRead(char str[], int size, fstream& BD) {
+	char sym = NULL;
+	BD.getline(str, size, '\t');
 	BD.get(sym);
 	if (sym == '\t') {
 		BD.get();
@@ -179,4 +223,26 @@ void intRead(int *integer, int size, fstream& BD) {
 	BD.get(str);
 	*integer = (int)str - err;
 	BD.getline(string, size, '|');
+}
+
+void strBinRead(char str[], fstream& BDB) {
+	char read = NULL;
+	for (int i = 0; read != '\t'; ++i) {
+		BDB.read((char*)read, sizeof(read));
+		if (read == '\t') {
+			str[i] = read;
+		}
+		else {
+			BDB.read((char*)read, sizeof(read));
+		}
+	}
+}
+
+void intBinRead(int* integer, fstream& BDB) {
+	char read = NULL;
+	BDB.read((char*)read, sizeof(read));
+	*integer = (int)read - err;
+	for (int i = 0; read != '|'; ++i) {
+		BDB.read((char*)read, sizeof(read));
+	}
 }
