@@ -26,17 +26,17 @@ enum {
 };
 
 void changeSt(studentInformation student[], int quont) {
-	int changeCommand = 0, numSt = 0, flag = 1;
+	int changeCommand = 0, numSt = 0, flag = 0;
 	do { 
-		cout << "Вы хотите изменить запись?" << endl << "1) Да" << endl << "2) Нет\n";
+		cout << "Запись о каком студенте по номеру вы хотите поменять?\n";
+		numSt = typeCheck(numSt, 1, quont);
+		system("cls");
+		cout << "Вы точно хотите изменить запись?" << endl << "1) Да" << endl << "2) Нет\n";
 		flag = typeCheck(flag, yes, no);
 		system("cls");
 		switch (flag) {
 		case yes:
-			cout << "Запись о каком студенте по номеру вы хотите поменять?\n";
-			numSt = typeCheck(numSt, 1, quont);
 			numSt -= 1;
-			system("cls");
 			cout << "Что вы хотите поменять?\n";
 			cout << "0)  Возврат к меню." << endl << "1)  Изменить Фамилию." << endl << "2)  Изменить имя." << endl << "3)  Изменить отчество." << endl << "4)  Изменить группу." << endl << "5)  Изменить курс." << endl << "6)  Изменить оценку по высокоуровневому программированию." << endl << "7)  Изменить оценку по теоретической информатике." << endl << "8)  Изменить оценку по математическому анализу." << endl << "9)  Изменить оценку по аналитической геометрии." << endl << "10) Изменить оценку по английскому языку." << endl << "11) Изменить оценку по инженерной графике." << endl;
 			changeCommand = typeCheck(changeCommand, ext, engGraph);
