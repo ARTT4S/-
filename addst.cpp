@@ -10,10 +10,9 @@ enum {
 };
 
 int addSt(studentInformation student[], int quont) {
-	int flag = 0;
+	int flag = 1;
 	while (flag != no) {
-		cout << "Вы хотите добавить запись?" << endl << "1) Да" << endl << "2) Нет\n";
-		flag = typeCheck(flag, yes, no);
+		
 		system("cls");
 		switch (flag) {
 		case yes:
@@ -55,6 +54,8 @@ int addSt(studentInformation student[], int quont) {
 			cout << "Введена неверная команда.\n";
 			break;
 		}
+		cout << "Вы хотите добавить ещё одну запись?" << endl << "1) Да" << endl << "2) Нет\n";
+		flag = typeCheck(flag, yes, no);
 	}
 
 	return quont;
