@@ -25,10 +25,11 @@ enum {
 	engGraph
 };
 
-void changeSt(studentInformation student[], int quont) {
+void changeSt(studentInformation student[], int quont, fstream &BD) {
 	int changeCommand = 0, numSt = 0, flag = 0;
 	do { 
-		cout << "Запись о каком студенте по номеру вы хотите поменять?\n";
+		write(student, quont, BD);
+		cout << "Запись о каком студенте по номеру вы хотите поменять: ";
 		numSt = typeCheck(numSt, 1, quont);
 		system("cls");
 		cout << "Вы точно хотите изменить запись?" << endl << "1) Да" << endl << "2) Нет\n";
@@ -102,5 +103,7 @@ void changeSt(studentInformation student[], int quont) {
 			break;
 		}
 		system("cls");
+		cout << "Вы хотите продолжить изменения?" << endl << "1) Да" << endl << "2) Нет\n";
+		flag = typeCheck(flag, yes, no);
 	} while (flag != no);
 } 
