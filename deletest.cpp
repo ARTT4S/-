@@ -2,7 +2,6 @@
 #include "typeCheck.h"
 #include "write.h"
 #include <iostream>
-using namespace std;
 
 enum {
 	yes = 1,
