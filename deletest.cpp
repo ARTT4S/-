@@ -12,7 +12,7 @@ int deleteSt(studentInformation student[], int quont, fstream &BD) {
 	int flag = 0, delstr = 0, copyi = 0;
 	while (flag != no) {
 		write(student, quont, BD);
-		cout << "Какую по счёту запись вы хотите удалить?\n";
+		cout << "Какую по счёту запись вы хотите удалить: ";
 		delstr = typeCheck(delstr, 1, quont);
 		system("cls");
 		cout << "Вы точно хотите удалить запись?" << endl << "1) Да" << endl << "2) Нет\n";
