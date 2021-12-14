@@ -6,7 +6,6 @@
 using namespace std;
 #include "struct.h"
 #include "write.h"
-#include "binWrite.h"
 #include "addst.h"
 #include "changest.h"
 #include "deletest.h"
@@ -25,8 +24,8 @@ enum {
 
 static const int err = 48;
 
-void strRead(char str[], int size, char sym, fstream &BD);
-void intRead(int integer, int size, char sym, fstream &BD);
+void strRead(char str[], int size, char sym, fstream& BD);
+void intRead(int *integer, int size, fstream& BD);
 
 int main() {
 	setlocale(LC_ALL, "Russian");
@@ -37,7 +36,7 @@ int main() {
 	char read = 'A';
 	const char nameFile[nameFileSize]{ "C:\\Users\\edika\\Desktop\\БД.txt" };
 	const char nameBinFile[nameFileSize]{ "C:\\Users\\edika\\Desktop\\БДбин.txt" };
-	char *string = new char[size];
+	char* string = new char[size];
 	studentInformation* student = new studentInformation[maxQuontSt];
 	fstream BD;
 	fstream BDBin;
@@ -47,56 +46,57 @@ int main() {
 	system("pause");
 	system("cls");
 	BD.open(nameFile, ios_base::in);
-	BDBin.open(nameBinFile, ios_base::binary);
-	if (BD.peek() == EOF) {
-		cout << "База данных пуста.\n";
-		cout << "Заполните базу данных.\n";
-		Sleep(1500);
-		system("cls");
-		quontitySt = addSt(student, quontitySt);
-	}
-	else {
-		if (BD.is_open()) {
-			BD.getline(string, size);
-			BD.seekg(0, ios_base::end);
-			BD.seekg(-size, ios_base::end);
-			BD.seekg(-2, ios_base::cur);
-			while (read != '\n') {
-				BD.seekg(-2, ios_base::cur);
-				BD.get(read);
-			}
-			BD.get(read);
-			while (read != '\t') {
-				BD.get(read);
-				if (read != '\t') {
-					quontitySt *= 10;
-					quontitySt += (int)read - err; 
-				}
-			}
-			BD.seekg(size * 2 + sizeColumnNames, ios_base::beg);
-			for (int i = 0; i < quontitySt; ++i) {
-				BD.getline(string, size, '\t');
-				BD.get();
-				strRead(student[i].surname, surnameSize, '\t', BD);
-				strRead(student[i].name, nameSize, '\t', BD);
-				strRead(student[i].patronymic, patronymicSize, '\t', BD);
-				strRead(student[i].group, groupSize, '\t', BD);
-				intRead(student[i].course, size, '|', BD);
-				intRead(student[i].discipline.highProgr, size, '|', BD);
-				intRead(student[i].discipline.teorInf, size, '|', BD);
-				intRead(student[i].discipline.math, size, '|', BD);
-				intRead(student[i].discipline.anGeom, size, '|', BD);
-				intRead(student[i].discipline.english, size, '|', BD);
-				intRead(student[i].discipline.engGraph, size, '|', BD);
-				BD.get();
-				BD.getline(string, size);
-			}
-
+	BDBin.open(nameBinFile, ios_base::in);
+	if (BD.is_open() and BDBin.is_open()) {
+		if ((BD.peek() == EOF) and (BDBin.peek() == EOF)) {
+			cout << "База данных пуста.\n";
+			cout << "Заполните базу данных.\n";
+			Sleep(1500);
+			system("cls");
+			quontitySt = addSt(student, quontitySt);
 		}
 		else {
-			cout << "Проблемы с запуском файла, содержащего базу данных. Возможно, файла не существует.\n";
-			command = 0;
+			if (BD.is_open()) {
+				BD.getline(string, size);
+				BD.seekg(0, ios_base::end);
+				BD.seekg(-size, ios_base::end);
+				BD.seekg(-2, ios_base::cur);
+				while (read != '\n') {
+					BD.seekg(-2, ios_base::cur);
+					BD.get(read);
+				}
+				BD.get(read);
+				while (read != '\t') {
+					BD.get(read);
+					if (read != '\t') {
+						quontitySt *= 10;
+						quontitySt += (int)read - err;
+					}
+				}
+				BD.seekg(size * 2 + sizeColumnNames, ios_base::beg);
+				for (int i = 0; i < quontitySt; ++i) {
+					BD.getline(string, size, '\t');
+					BD.get();
+					strRead(student[i].surname, surnameSize, '\t', BD);
+					strRead(student[i].name, nameSize, '\t', BD);
+					strRead(student[i].patronymic, patronymicSize, '\t', BD);
+					strRead(student[i].group, groupSize, '\t', BD);
+					intRead(&student[i].course, size, BD);
+					intRead(&student[i].discipline.highProgr, size, BD);
+					intRead(&student[i].discipline.teorInf, size, BD);
+					intRead(&student[i].discipline.math, size, BD);
+					intRead(&student[i].discipline.anGeom, size, BD);
+					intRead(&student[i].discipline.english, size, BD);
+					intRead(&student[i].discipline.engGraph, size, BD);
+					BD.get();
+					BD.getline(string, size);
+				}
+			}
 		}
+	}
+	else {
+		cout << "Проблемы с запуском файла, содержащего базу данных. Возможно, файла не существует.\n";
+		command = 0;
 	}
 	BD.close();
 	BDBin.close();
@@ -123,13 +123,13 @@ int main() {
 			cout << "Вы ввели команду Изменить запись.\n";
 			Sleep(1000);
 			system("cls");
-			changeSt(student, quontitySt);
+			changeSt(student, quontitySt, BD);
 			break;
 		case delet:
 			cout << "Вы ввели команду Удалить запись.\n";
 			Sleep(1000);
-			write(student, quontitySt, BD);
-			quontitySt = deleteSt(student, quontitySt);
+			system("cls");
+			quontitySt = deleteSt(student, quontitySt, BD);
 			break;
 		case sort:
 			cout << "Вы ввели команду Сортировка.\n";
@@ -140,6 +140,7 @@ int main() {
 		case search:
 			cout << "Вы ввели команду Поиск.\n";
 			Sleep(1000);
+			system("cls");
 			write(student, quontitySt, BD);
 			searchSt(student, quontitySt);
 			break;
@@ -148,33 +149,34 @@ int main() {
 		}
 		Sleep(1000);
 		system("cls");
-		Sleep(500);
 		BD.close();
 		BD.open(nameFile, ios_base::in);
 		BDBin.open(nameBinFile, ios_base::binary);
-		binWrite(quontitySt, BD, BDBin);
+		while (!BD.eof()) {
+			BD.getline(string, size);
+			BDBin.write(string, sizeof(string));
+		}
 		BD.close();
 		BDBin.close();
 	}
-
 	delete[]student;
 	delete[]string;
 	cout << "До встречи!";
-	
+
 	return(0);
 }
 
-void strRead(char str[], int size, char sym, fstream &BD) {
+void strRead(char str[], int size, char sym, fstream& BD) {
 	BD.getline(str, size, sym);
 	BD.get(sym);
 	if (sym == '\t') {
 		BD.get();
 	}
 }
-void intRead(int integer, int size, char sym, fstream &BD) {
+void intRead(int *integer, int size, fstream& BD) {
 	char str = NULL;
-	char *string = new char[size];
+	char* string = new char[size];
 	BD.get(str);
-	integer = (int)str - err;
-	BD.getline(string, size, sym);
+	*integer = (int)str - err;
+	BD.getline(string, size, '|');
 }
