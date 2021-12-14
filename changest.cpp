@@ -3,7 +3,6 @@
 #include "typeCheck.h"
 #include <iostream>
 #include <Windows.h>
-using namespace std;
 
 enum {
 	yes = 1,
