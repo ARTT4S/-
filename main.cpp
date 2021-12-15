@@ -33,7 +33,7 @@ int main() {
 	setlocale(LC_ALL, "Russian");
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	int command = 1, numSt = 0, quontitySt = 0;
+	int command = 1, numSt = 0, quontitySt = 0, count = 0;
 	const int nameFileSize = 255, sizeColumnNames = 115, size = 150;
 	char read = NULL;
 	const char nameFile[nameFileSize]{ "C:\\Users\\edika\\Desktop\\БД.txt" };
@@ -59,7 +59,6 @@ int main() {
 		}
 		else if (BD.peek() != EOF) {
 			if (BD.is_open()) {
-				BD.getline(string, size);
 				BD.seekg(0, ios_base::end);
 				BD.seekg(-size, ios_base::end);
 				BD.seekg(-2, ios_base::cur);
@@ -98,15 +97,16 @@ int main() {
 		else if (BDBin.peek() != EOF) {
 			BDBin.close();
 			BDBin.open(nameBinFile, ios_base::in | ios_base::binary);
-			BDBin.read((char*)string, sizeof(read));
 			BDBin.seekg(0, ios_base::end);
 			BDBin.seekg(-size, ios_base::end);
-			BDBin.seekg(-2, ios_base::cur);
-			while (read != '\n') {
+			BDBin.seekg(-1, ios_base::cur);
+			while (count != 13) {
 				BDBin.seekg(-2, ios_base::cur);
 				BDBin.read((char*)&read, sizeof(read));
+				if (read == '|') {
+					++count;
+				}
 			}
-			BDBin.read((char*)&read, sizeof(read));
 			while (read != '\t') {
 				BDBin.read((char*)&read, sizeof(read));
 				if (read != '\t') {
@@ -114,8 +114,8 @@ int main() {
 					quontitySt += (int)read - err;
 				}
 			}
-			cout << quontitySt << endl;
-			BDBin.seekg(size * 2 + sizeColumnNames, ios_base::beg);
+			BDBin.seekg(size * 3, ios_base::beg);
+			BDBin.read((char*)&read, sizeof(read));
 			for (int i = 0; i < quontitySt; ++i) {
 				while (read != '\t') {
 					BDBin.read((char*)&read, sizeof(read));
@@ -133,7 +133,6 @@ int main() {
 				intBinRead(&student[i].discipline.english, BDBin);
 				intBinRead(&student[i].discipline.engGraph, BDBin);
 				BDBin.read((char*)&read, sizeof(read));
-				BDBin.read((char*)string, size);
 			}
 		}
 	}
@@ -227,14 +226,22 @@ void intRead(int *integer, int size, fstream& BD) {
 
 void strBinRead(char str[], fstream& BDB) {
 	char read = NULL;
-	for (int i = 0; read != '\t'; ++i) {
+	int i = 0;
+	for (i; read != '|'; ++i) {
 		BDB.read((char*)&read, sizeof(read));
-		if (read == '\t') {
+		if (read != '\t') {
 			str[i] = read;
 		}
 		else {
 			BDB.read((char*)&read, sizeof(read));
 		}
+		if (read == '\t') {
+			BDB.read((char*)&read, sizeof(read));
+		}
+	}
+	i -= 1;
+	for (i; i < strlen(str); ++i) {
+		str[i] = NULL;
 	}
 }
 
